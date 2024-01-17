@@ -71,6 +71,7 @@ namespace Tests
         {
             var options = new DbContextOptionsBuilder<InterviewDbContext>()
                 .UseInMemoryDatabase("test database")
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .Options;
             var context = new InterviewDbContext(options);
             IRepositoryWrapper wrapper = new RepositoryWrapper(context);
@@ -82,12 +83,79 @@ namespace Tests
 
 
             wrapper.TopicRepository.Add(new Topic { Id = 1, Name = "test" });
-            wrapper.TopicRepository.GetById(expectedTopic.Id).Name = expectedTopic.Name;
+            wrapper.TopicRepository.Update(expectedTopic);
             var actual = wrapper.TopicRepository.GetById(expectedTopic.Id);
 
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual.Name, Is.EqualTo(expectedTopic.Name));
+        }
+
+        [Test]
+        public void QuestionRepository_Updates_Entities()
+        {
+            var options = new DbContextOptionsBuilder<InterviewDbContext>()
+                .UseInMemoryDatabase("test database")
+                .Options;
+            var context = new InterviewDbContext(options);
+            IRepositoryWrapper wrapper = new RepositoryWrapper(context);
+            var expected = new Question()
+            {
+                Id = 1,
+                Name = "Test",
+                Answer = "Answer"
+            };
+
+            wrapper.QuestionRepository.Add(new Question() { Id = 1, Name = "", Answer = ""});
+            wrapper.QuestionRepository.Update(expected);
+            var actual = wrapper.QuestionRepository.GetById(expected.Id);
+
+
+            Assert.That(actual, Is.Not.Null);
+            Assert.That(actual.Name, Is.EqualTo(expected.Name));
+        }
+
+        [Test]
+        public void TopicRepository_Removes_Entities()
+        {
+            var options = new DbContextOptionsBuilder<InterviewDbContext>()
+                .UseInMemoryDatabase("test database")
+                .Options;
+            var context = new InterviewDbContext(options);
+            IRepositoryWrapper wrapper = new RepositoryWrapper(context);
+            var topic = new Topic()
+            {
+                Id = 1,
+                Name = "Test"
+            };
+
+            wrapper.TopicRepository.Add(topic);
+            wrapper.TopicRepository.Remove(topic);
+            var actual = wrapper.TopicRepository.GetById(topic.Id);
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void QuestionsRepository_Removes_Entities()
+        {
+            var options = new DbContextOptionsBuilder<InterviewDbContext>()
+                .UseInMemoryDatabase("test database")
+                .Options;
+            var context = new InterviewDbContext(options);
+            IRepositoryWrapper wrapper = new RepositoryWrapper(context);
+            var question = new Question()
+            {
+                Id = 1,
+                Name = "Test",
+                Answer = "Answer"
+            };
+
+            wrapper.QuestionRepository.Add(question);
+            wrapper.QuestionRepository.Remove(question);
+            var actual = wrapper.QuestionRepository.GetById(question.Id);
+
+            Assert.That(actual, Is.Null);
         }
     }
 }

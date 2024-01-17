@@ -11,5 +11,6 @@ namespace Entities.Repositories.Abstraction
         T? GetById(int id);
         void Add(T entity);
         void Update(T entity);
+        void Remove(T entity);
     }
 }

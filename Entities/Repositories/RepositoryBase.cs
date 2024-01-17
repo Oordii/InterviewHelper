@@ -25,12 +25,17 @@ namespace Entities.Repositories
 
         public T? GetById(int id)
         {
-            return _context.Set<T>().Find(id);
+            return _context.Set<T>().AsNoTracking().SingleOrDefault(e => e.Id == id);
         }
 
         public void Update(T entity) 
         {
             _context.Set<T>().Update(entity);
+        }
+
+        public void Remove(T entity)
+        {
+            _context.Set<T>().Remove(entity);
         }
     }
 }
